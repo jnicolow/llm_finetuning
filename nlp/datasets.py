@@ -1,4 +1,5 @@
 import os
+import torch
 from torch.utils.data import Dataset
 
 
@@ -13,7 +14,7 @@ class SentimentDataset(Dataset):
         return len(self.text_fns)
 
     def __getitem__(self, idx):
-        text_fn = self.texts[idx]
+        text_fn = self.text_fns[idx]
         label = 0
         if os.path.basename(os.path.dirname(text_fn)) == 'pos': label = 1
         with open(text_fn) as f:
