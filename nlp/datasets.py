@@ -39,7 +39,7 @@ class SentimentDataset(Dataset):
 
 
 class JokesDataset(Dataset):
-    def __init__(self, filepath, tokenizer, max_length=512):
+    def __init__(self, filepath, tokenizer, max_length=30):
         self.tokenizer = tokenizer
         self.jokes = self.load_jokes(filepath)
         self.max_length = max_length
@@ -52,11 +52,13 @@ class JokesDataset(Dataset):
                 if '"ID","Joke"' in line: continue # skip first line
                 joke_parts = line.split(',"')[1:] # joke id is the first element
                 joke = '", "'.join(joke_parts)
-                joke_split = joke.split()
-                if len(joke_split) > 3:
-                    first_three_words = " ".join(joke_split[:3])
-                    rest_of_joke = " ".join(joke_split[3:])
-                    jokes.append((first_three_words, rest_of_joke))
+                input = joke # pass whole joke as input
+                output = joke 
+                # joke_split = joke.split()
+                # if len(joke_split) > 3:
+                #     first_three_words = " ".join(joke_split[:3])
+                #     rest_of_joke = " ".join(joke_split[3:])
+                jokes.append((input, output))
         return jokes
 
     def __len__(self):
