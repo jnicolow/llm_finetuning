@@ -50,10 +50,8 @@ class JokesDataset(Dataset):
             lines = f.readlines()
             for line in lines:
                 if '"ID","Joke"' in line: continue # skip first line
-                print(tuple(line.split(',"')))
                 joke_parts = line.split(',"')[1:] # joke id is the first element
                 joke = '", "'.join(joke_parts)
-                print(joke)
                 joke_split = joke.split()
                 if len(joke_split) > 3:
                     first_three_words = " ".join(joke_split[:3])
