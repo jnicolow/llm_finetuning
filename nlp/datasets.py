@@ -48,8 +48,12 @@ class JokesDataset(Dataset):
         jokes = []
         with open(filepath, "r") as f:
             lines = f.readlines()
-            for row in lines:
-                joke = row['Joke']
+            for line in lines:
+                if '"ID","Joke"' in line: continue # skip first line
+                print(tuple(line.split(',"')))
+                joke_parts = line.split(',"')[1:] # joke id is the first element
+                joke = '", "'.join(joke_parts)
+                print(joke)
                 joke_split = joke.split()
                 if len(joke_split) > 3:
                     first_three_words = " ".join(joke_split[:3])
@@ -63,11 +67,11 @@ class JokesDataset(Dataset):
     def __getitem__(self, idx):
         first_three_words, rest_of_joke = self.jokes[idx]
         
-        # Tokenize inputs and outputs
+        # tokenize inputs and outputs
         input_encodings = self.tokenizer(first_three_words, truncation=True, padding='max_length', max_length=self.max_length, return_tensors="pt")
         target_encodings = self.tokenizer(rest_of_joke, truncation=True, padding='max_length', max_length=self.max_length, return_tensors="pt")
         
-        input_ids = input_encodings["input_ids"].squeeze()  # Remove batch dimension
+        input_ids = input_encodings["input_ids"].squeeze()  # remove batch dimension
         target_ids = target_encodings["input_ids"].squeeze()
 
         return {
