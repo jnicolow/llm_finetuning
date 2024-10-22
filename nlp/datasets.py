@@ -36,3 +36,41 @@ class SentimentDataset(Dataset):
             'attention_mask': encoding['attention_mask'].flatten(),
             'labels': torch.tensor(label, dtype=torch.long)
         }
+
+
+class JokesDataset(Dataset):
+    def __init__(self, filepath, tokenizer, max_length=512):
+        self.tokenizer = tokenizer
+        self.jokes = self.load_jokes(filepath)
+        self.max_length = max_length
+
+    def load_jokes(self, filepath):
+        jokes = []
+        with open(filepath, "r") as f:
+            lines = f.readlines()
+            for row in lines:
+                joke = row['Joke']
+                joke_split = joke.split()
+                if len(joke_split) > 3:
+                    first_three_words = " ".join(joke_split[:3])
+                    rest_of_joke = " ".join(joke_split[3:])
+                    jokes.append((first_three_words, rest_of_joke))
+        return jokes
+
+    def __len__(self):
+        return len(self.jokes)
+
+    def __getitem__(self, idx):
+        first_three_words, rest_of_joke = self.jokes[idx]
+        
+        # Tokenize inputs and outputs
+        input_encodings = self.tokenizer(first_three_words, truncation=True, padding='max_length', max_length=self.max_length, return_tensors="pt")
+        target_encodings = self.tokenizer(rest_of_joke, truncation=True, padding='max_length', max_length=self.max_length, return_tensors="pt")
+        
+        input_ids = input_encodings["input_ids"].squeeze()  # Remove batch dimension
+        target_ids = target_encodings["input_ids"].squeeze()
+
+        return {
+            'input_ids': input_ids,
+            'target_ids': target_ids
+        }
