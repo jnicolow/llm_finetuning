@@ -39,7 +39,7 @@ class SentimentDataset(Dataset):
 
 
 class JokesDataset(Dataset):
-    def __init__(self, filepath, tokenizer, max_length=30):
+    def __init__(self, filepath, tokenizer, max_length=100):
         self.tokenizer = tokenizer
         self.jokes = self.load_jokes(filepath)
         self.max_length = max_length
